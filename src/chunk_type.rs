@@ -10,41 +10,33 @@ struct ChunkType {
 impl TryFrom<[u8; 4]> for ChunkType {
   type Error = Error;
   fn try_from(value: [u8; 4]) -> Result<Self, Self::Error> {
-    Ok(ChunkType {
-      // value: [1u8, 1u8, 1u8, 1u8],
-      value: unimplemented!(),
-    })
+    Ok(ChunkType { value })
   }
 }
 
 impl FromStr for ChunkType {
   type Err = crate::Error;
   fn from_str(s: &str) -> Result<Self, Self::Err> {
-    Ok(ChunkType {
-      // value: [1u8, 1u8, 1u8, 1u8],
-      value: unimplemented!(),
-    })
+    let mut value = [0u8; 4];
+    value.copy_from_slice(&s.as_bytes()[..4]);
+
+    Ok(ChunkType { value })
   }
 }
 
 impl Display for ChunkType {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    // Ok(())
-    unimplemented!()
+    write!(f, "{:?}", self.value)
   }
 }
 
 impl PartialEq for ChunkType {
   fn eq(&self, other: &Self) -> bool {
-    unimplemented!()
+    self.value == other.value
   }
 }
 
-impl Eq for ChunkType {
-  // fn assert_receiver_is_total_eq(&self) {
-  //   unimplemented!()
-  // }
-}
+impl Eq for ChunkType {}
 
 impl ChunkType {
   fn bytes(&self) -> [u8; 4] {

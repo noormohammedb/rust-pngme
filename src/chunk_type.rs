@@ -75,27 +75,28 @@ impl ChunkType {
 #[cfg(test)]
 mod tests {
   use super::*;
+  use std::convert::TryFrom;
+  use std::str::FromStr;
 
   #[test]
-  pub fn test_chunk_type_from_butes() {
+  pub fn test_chunk_type_from_bytes() {
     let expected = [82, 117, 83, 116];
     let actual = ChunkType::try_from([82, 117, 83, 116]).unwrap();
 
-    assert_eq!(expected, actual.bytes())
+    assert_eq!(expected, actual.bytes());
   }
 
   #[test]
   pub fn test_chunk_type_from_str() {
     let expected = ChunkType::try_from([82, 117, 83, 116]).unwrap();
     let actual = ChunkType::from_str("RuSt").unwrap();
-
     assert_eq!(expected, actual);
   }
 
   #[test]
   pub fn test_chunk_type_is_critical() {
     let chunk = ChunkType::from_str("RuSt").unwrap();
-    assert!(chunk.is_critical())
+    assert!(chunk.is_critical());
   }
 
   #[test]
@@ -145,14 +146,16 @@ mod tests {
     let chunk = ChunkType::from_str("RuSt").unwrap();
     assert!(chunk.is_valid());
   }
+
   #[test]
   pub fn test_invalid_chunk_is_valid() {
     let chunk = ChunkType::from_str("Rust").unwrap();
     assert!(!chunk.is_valid());
 
-    let chunk = ChunkType::from_str("Rult");
+    let chunk = ChunkType::from_str("Ru1t");
     assert!(chunk.is_err());
   }
+
   #[test]
   pub fn test_chunk_type_string() {
     let chunk = ChunkType::from_str("RuSt").unwrap();

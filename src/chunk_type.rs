@@ -1,8 +1,12 @@
-use std::{fmt::Display, str::FromStr};
+use std::{
+  fmt::Display,
+  io::{Error as IoError, ErrorKind},
+  str::FromStr,
+};
 
 use crate::Error;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 struct ChunkType {
   value: [u8; 4],
 }
@@ -17,6 +21,12 @@ impl TryFrom<[u8; 4]> for ChunkType {
 impl FromStr for ChunkType {
   type Err = crate::Error;
   fn from_str(s: &str) -> Result<Self, Self::Err> {
+    if !s.chars().all(|i| i.is_ascii_alphabetic()) {
+      return Err(Box::new(IoError::new(
+        ErrorKind::InvalidInput,
+        "only ascii alphabets",
+      )));
+    }
     let mut value = [0u8; 4];
     value.copy_from_slice(&s.as_bytes()[..4]);
 
@@ -26,41 +36,50 @@ impl FromStr for ChunkType {
 
 impl Display for ChunkType {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{:?}", self.value)
+    write!(f, "{}", String::from_utf8_lossy(&self.value))
   }
 }
 
-impl PartialEq for ChunkType {
-  fn eq(&self, other: &Self) -> bool {
-    self.value == other.value
-  }
-}
+// impl PartialEq for ChunkType {
+//   fn eq(&self, other: &Self) -> bool {
+//     self.value == other.value
+//   }
+// }
 
-impl Eq for ChunkType {}
+// impl Eq for ChunkType {}
 
 impl ChunkType {
   fn bytes(&self) -> [u8; 4] {
-    unimplemented!()
+    self.value
   }
 
   fn is_valid(&self) -> bool {
-    unimplemented!()
+    // self.value[2] >= b'A' && self.value[2] <= b'Z'
+    u8::is_ascii_uppercase(&self.value[2]) && self.value.iter().all(|i| i.is_ascii_alphabetic())
   }
 
   fn is_critical(&self) -> bool {
-    unimplemented!()
+    // self.value[0] >= b'A' && self.value[0] <= b'Z'
+
+    u8::is_ascii_uppercase(&self.value[0])
   }
 
   fn is_public(&self) -> bool {
-    unimplemented!()
+    // self.value[1] >= b'A' && self.value[1] <= b'Z'
+
+    u8::is_ascii_uppercase(&self.value[1])
   }
 
   fn is_reserved_bit_valid(&self) -> bool {
-    unimplemented!()
+    // self.value[2] >= b'A' && self.value[2] <= b'Z'
+
+    u8::is_ascii_uppercase(&self.value[2])
   }
 
   fn is_safe_to_copy(&self) -> bool {
-    unimplemented!()
+    // !(self.value[3] >= b'A' && self.value[3] <= b'Z')
+
+    !u8::is_ascii_uppercase(&self.value[3])
   }
 }
 
